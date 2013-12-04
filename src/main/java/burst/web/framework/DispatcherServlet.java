@@ -135,19 +135,29 @@ public class DispatcherServlet extends HttpServlet implements IDispatcherRegistr
             return;
         }
 
+        IResponse response = null;
         try {
             IRequest request = REQUEST_BUILDER.build(getRequestClass(action.getClass()), rawRequest, rawResponse, httpMethod);
             IContext context = CONTEXT_BUILDER.build(rawRequest, rawResponse, httpMethod);
-            IResponse response = action.execute(request, context);
-            if(response.getErrorCode() != null) {
-                if(tryHandleError(response.getErrorCode(), null, rawRequest, rawResponse, httpMethod)) {
-                    return;
-                }
+            response = action.execute(request, context);
+        } catch (Throwable ex) {
+            if(tryHandleError(ErrorCode.SERVER_ERROR, ex, rawRequest, rawResponse, httpMethod)) {
+                throw new ServletException("burst web: DispatcherServlet, in build request, build context, execute, unhandled error", ex);
             }
+        }
+        if(response == null) {
+            throw new ServletException("burst web: DispatcherServlet, response gets null");
+        }
+        if(response.getErrorCode() != null) {
+            if(tryHandleError(response.getErrorCode(), null, rawRequest, rawResponse, httpMethod)) {
+                return;
+            }
+        }
+        try {
             response.response(rawRequest, rawResponse, httpMethod);
         } catch (Throwable ex) {
             if(tryHandleError(ErrorCode.SERVER_ERROR, ex, rawRequest, rawResponse, httpMethod)) {
-                throw new ServletException("burst web: DispatcherServlet, unhandled error", ex);
+                throw new ServletException("burst web: DispatcherServlet, in response, unhandled error", ex);
             }
         }
     }

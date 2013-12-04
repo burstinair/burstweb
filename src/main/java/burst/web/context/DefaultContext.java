@@ -22,10 +22,12 @@ public class DefaultContext implements IContext {
 
     private Map<String, String> rawParameters;
 
+    @Override
     public String getParameter(String key) {
         return rawParameters.get(key);
     }
 
+    @Override
     public Set<String> getParameterKeySet() {
         return rawParameters.keySet();
     }
