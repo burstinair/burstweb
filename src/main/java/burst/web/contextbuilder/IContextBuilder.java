@@ -1,10 +1,7 @@
 package burst.web.contextbuilder;
 
 import burst.web.IContext;
-import burst.web.enums.HttpMethod;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import burst.web.framework.RawContext;
 
 /**
  * @author Burst
@@ -12,5 +9,5 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IContextBuilder {
 
-    IContext build(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod);
+    IContext build(RawContext rawContext) throws Throwable;
 }

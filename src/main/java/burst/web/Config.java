@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationListener;
 import java.util.Map;
 
 /**
- * 用于配置DispatcherServlet的Dispatcher, RequestBuilder, ContextBuilder, ErrorMap
+ * 用于配置DispatcherServlet
  *
  * @author Burst
  *         13-12-4 上午12:42

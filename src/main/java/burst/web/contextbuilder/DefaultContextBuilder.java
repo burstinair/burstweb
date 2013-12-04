@@ -2,10 +2,8 @@ package burst.web.contextbuilder;
 
 import burst.web.IContext;
 import burst.web.context.DefaultContext;
-import burst.web.enums.HttpMethod;
+import burst.web.framework.RawContext;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +19,12 @@ public class DefaultContextBuilder implements IContextBuilder {
     private DefaultContextBuilder() { }
 
     @Override
-    public IContext build(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) {
+    public IContext build(RawContext rawContext) {
         Map<String, String> innerContext = new HashMap<String, String>();
-        Enumeration<String> parameterNames = request.getParameterNames();
+        Enumeration<String> parameterNames = rawContext.getRequest().getParameterNames();
         while(parameterNames.hasMoreElements()) {
             String parameterName = parameterNames.nextElement();
-            innerContext.put(parameterName, request.getParameter(parameterName));
+            innerContext.put(parameterName, rawContext.getRequest().getParameter(parameterName));
         }
         return new DefaultContext(innerContext);
     }

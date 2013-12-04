@@ -2,11 +2,9 @@ package burst.web.response;
 
 import burst.web.IResponse;
 import burst.web.enums.ForwardType;
-import burst.web.enums.HttpMethod;
+import burst.web.framework.RawContext;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author zhongkai.zhao
@@ -45,13 +43,13 @@ public class ForwardResponse implements IResponse {
     }
 
     @Override
-    public void response(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) throws Throwable {
+    public void response(RawContext rawContext) throws Throwable {
 
         if(forwardType == ForwardType.FORWARD) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher(targetUrl);
-            dispatcher.forward(request, response);
+            RequestDispatcher dispatcher = rawContext.getRequest().getRequestDispatcher(targetUrl);
+            dispatcher.forward(rawContext.getRequest(), rawContext.getResponse());
         } else if(forwardType == ForwardType.REDIRECT) {
-            response.sendRedirect(targetUrl);
+            rawContext.getResponse().sendRedirect(targetUrl);
         }
     }
 

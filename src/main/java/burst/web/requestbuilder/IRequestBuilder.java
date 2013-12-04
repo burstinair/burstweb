@@ -1,10 +1,7 @@
 package burst.web.requestbuilder;
 
 import burst.web.IRequest;
-import burst.web.enums.HttpMethod;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import burst.web.framework.RawContext;
 
 /**
  * @author Burst
@@ -12,5 +9,5 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IRequestBuilder {
 
-    <REQUEST extends IRequest> REQUEST build(Class<REQUEST> requestClass, HttpServletRequest rawRequest, HttpServletResponse rawResponse, HttpMethod method) throws Throwable;
+    <REQUEST extends IRequest> REQUEST build(Class<REQUEST> requestClass, RawContext rawContext) throws Throwable;
 }

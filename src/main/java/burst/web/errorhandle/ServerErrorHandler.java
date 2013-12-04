@@ -1,8 +1,7 @@
 package burst.web.errorhandle;
 
-import burst.web.enums.HttpMethod;
+import burst.web.framework.RawContext;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -16,7 +15,7 @@ public class ServerErrorHandler implements IErrorHandler {
     private ServerErrorHandler() { }
 
     @Override
-    public void handle(Object errorContext, HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    public void handle(Object errorContext, RawContext rawContext) {
+        rawContext.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }

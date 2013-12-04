@@ -2,11 +2,9 @@ package burst.web.requestbuilder;
 
 import burst.web.IRequest;
 import burst.web.annotations.RequestField;
-import burst.web.enums.HttpMethod;
+import burst.web.framework.RawContext;
 import org.joda.time.DateTime;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -22,13 +20,13 @@ public class DefaultRequestBuilder implements IRequestBuilder {
     private DefaultRequestBuilder() { }
 
     @Override
-    public <REQUEST extends IRequest> REQUEST build(Class<REQUEST> requestClass, HttpServletRequest rawRequest, HttpServletResponse rawResponse, HttpMethod method) throws Throwable {
+    public <REQUEST extends IRequest> REQUEST build(Class<REQUEST> requestClass, RawContext rawContext) throws Throwable {
         REQUEST result = requestClass.newInstance();
         for(Field field : requestClass.getDeclaredFields()) {
             RequestField fieldAnnotation = field.getAnnotation(RequestField.class);
             if(fieldAnnotation != null) {
                 field.setAccessible(true);
-                field.set(result, convert(rawRequest.getParameterValues(fieldAnnotation.key()), field.getType()));
+                field.set(result, convert(rawContext.getRequest().getParameterValues(fieldAnnotation.key()), field.getType()));
             }
         }
         return result;

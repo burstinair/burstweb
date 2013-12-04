@@ -1,9 +1,6 @@
 package burst.web.response;
 
-import burst.web.enums.HttpMethod;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import burst.web.framework.RawContext;
 
 /**
  * @author Burst
@@ -36,8 +33,8 @@ public class PlainResponse extends BaseResponse {
     }
 
     @Override
-    public void response(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) throws Throwable {
-        response.setContentType(contentType);
-        response.getWriter().write(getResponseString());
+    public void response(RawContext rawContext) throws Throwable {
+        rawContext.getResponse().setContentType(contentType);
+        rawContext.getResponse().getWriter().write(getResponseString());
     }
 }

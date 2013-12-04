@@ -1,9 +1,6 @@
 package burst.web.response;
 
-import burst.web.enums.HttpMethod;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import burst.web.framework.RawContext;
 
 /**
  * TODO
@@ -23,7 +20,7 @@ public class ByteResponse extends BaseResponse {
     }
 
     @Override
-    public void response(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) throws Throwable {
+    public void response(RawContext rawContext) throws Throwable {
 
     }
 }

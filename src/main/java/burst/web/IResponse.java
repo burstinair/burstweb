@@ -1,6 +1,7 @@
 package burst.web;
 
 import burst.web.enums.HttpMethod;
+import burst.web.framework.RawContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IResponse {
 
-    void response(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) throws Throwable;
+    void response(RawContext rawContext) throws Throwable;
 
     String getErrorCode();
 }
