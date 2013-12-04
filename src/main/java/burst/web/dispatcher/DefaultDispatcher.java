@@ -1,9 +1,7 @@
 package burst.web.dispatcher;
 
-import burst.web.BurstWebCore;
 import burst.web.IAction;
 import burst.web.enums.HttpMethod;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;

@@ -10,22 +10,18 @@ import burst.web.framework.DispatcherServletInitEvent;
 import burst.web.requestbuilder.IRequestBuilder;
 import burst.web.requestbuilder.IRequestBuilderRegistry;
 import burst.web.framework.DispatcherServlet;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Map;
 
 /**
- * 核心配置类，需将该类置入Spring容器中
+ * 用于配置DispatcherServlet的Dispatcher, RequestBuilder, ContextBuilder, ErrorMap
  *
  * @author Burst
  *         13-12-4 上午12:42
  */
-public class BurstWebCore implements ApplicationListener<DispatcherServletInitEvent>, IDispatcherRegistry, IRequestBuilderRegistry, IContextBuilderRegistry, IErrorHandlerRegistry {
+public class Config implements ApplicationListener<DispatcherServletInitEvent>, IDispatcherRegistry, IRequestBuilderRegistry, IContextBuilderRegistry, IErrorHandlerRegistry {
 
     private DispatcherServlet servlet;
 

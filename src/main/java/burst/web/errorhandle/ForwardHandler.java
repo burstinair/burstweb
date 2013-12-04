@@ -3,10 +3,8 @@ package burst.web.errorhandle;
 import burst.web.enums.HttpMethod;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author zhongkai.zhao

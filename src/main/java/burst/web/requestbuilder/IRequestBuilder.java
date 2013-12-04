@@ -2,7 +2,6 @@ package burst.web.requestbuilder;
 
 import burst.web.IRequest;
 import burst.web.enums.HttpMethod;
-import org.springframework.beans.factory.FactoryBean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -1,6 +1,5 @@
 package burst.web.response;
 
-import burst.web.IResponse;
 import burst.web.enums.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;

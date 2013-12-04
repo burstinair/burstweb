@@ -1,7 +1,5 @@
 package burst.web.response;
 
-import burst.web.IResponse;
-
 /**
  * TODO
  * @author zhongkai.zhao
