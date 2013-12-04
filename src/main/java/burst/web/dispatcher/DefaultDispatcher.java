@@ -4,6 +4,7 @@ import burst.web.BurstWebCore;
 import burst.web.IAction;
 import burst.web.enums.HttpMethod;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +20,7 @@ public class DefaultDispatcher implements IDispatcher {
     private DefaultDispatcher() { }
 
     @Override
-    public IAction dispatch(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) {
-        ApplicationContext context = BurstWebCore.INSTANCE.getApplicationContext();
+    public IAction dispatch(WebApplicationContext context, HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) {
         String contextPath = request.getRequestURI().substring(request.getContextPath().length());
         return context.getBean(contextPath, IAction.class);
     }

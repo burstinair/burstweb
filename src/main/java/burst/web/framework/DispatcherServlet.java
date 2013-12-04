@@ -1,9 +1,6 @@
-package burst.web.servlet;
+package burst.web.framework;
 
-import burst.web.IAction;
-import burst.web.IContext;
-import burst.web.IRequest;
-import burst.web.IResponse;
+import burst.web.*;
 import burst.web.enums.ErrorCode;
 import burst.web.contextbuilder.DefaultContextBuilder;
 import burst.web.contextbuilder.IContextBuilder;
@@ -19,11 +16,16 @@ import burst.web.errorhandle.ServerErrorHandler;
 import burst.web.requestbuilder.DefaultRequestBuilder;
 import burst.web.requestbuilder.IRequestBuilder;
 import burst.web.requestbuilder.IRequestBuilderRegistry;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,39 +37,52 @@ import java.util.Map;
  */
 public class DispatcherServlet extends HttpServlet implements IDispatcherRegistry, IRequestBuilderRegistry, IContextBuilderRegistry, IErrorHandlerRegistry {
 
-    public static DispatcherServlet INSTANCE;
+    private WebApplicationContext webApplicationContext;
 
-    private DispatcherServlet() {
-        INSTANCE = this;
+    @Override
+    public void init() {
+
+        if(getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
+            webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        } else {
+            ContextLoader contextLoader = new ContextLoader();
+            webApplicationContext = contextLoader.initWebApplicationContext(getServletContext());
+        }
+
+        DISPATCHER = DefaultDispatcher.INSTANCE;
+        REQUEST_BUILDER = DefaultRequestBuilder.INSTANCE;
+        CONTEXT_BUILDER = DefaultContextBuilder.INSTANCE;
+
+        ERROR_HANDLER_MAP = new HashMap<String, IErrorHandler>();
+        ERROR_HANDLER_MAP.put(ErrorCode.NOT_FOUND, NotFoundHandler.INSTANCE);
+        ERROR_HANDLER_MAP.put(ErrorCode.SERVER_ERROR, ServerErrorHandler.INSTANCE);
+
+        DispatcherServletInitEvent dispatcherServletInitEvent = new DispatcherServletInitEvent(this, getServletConfig().getServletName());
+        webApplicationContext.publishEvent(dispatcherServletInitEvent);
     }
 
-    private static IDispatcher DISPATCHER = DefaultDispatcher.INSTANCE;
+    private IDispatcher DISPATCHER;
 
     @Override
     public void setDispatcher(IDispatcher dispatcher) {
         DISPATCHER = dispatcher;
     }
 
-    private static IRequestBuilder REQUEST_BUILDER = DefaultRequestBuilder.INSTANCE;
+    private IRequestBuilder REQUEST_BUILDER;
 
     @Override
     public void setRequestBuilder(IRequestBuilder requestBuilder) {
         REQUEST_BUILDER = requestBuilder;
     }
 
-    private static IContextBuilder CONTEXT_BUILDER = DefaultContextBuilder.INSTANCE;
+    private IContextBuilder CONTEXT_BUILDER;
 
     @Override
     public void setContextBuilder(IContextBuilder contextBuilder) {
         CONTEXT_BUILDER = contextBuilder;
     }
 
-    private static Map<String, IErrorHandler> ERROR_HANDLER_MAP;
-    static {
-        ERROR_HANDLER_MAP = new HashMap<String, IErrorHandler>();
-        ERROR_HANDLER_MAP.put(ErrorCode.NOT_FOUND, NotFoundHandler.INSTANCE);
-        ERROR_HANDLER_MAP.put(ErrorCode.SERVER_ERROR, ServerErrorHandler.INSTANCE);
-    }
+    private Map<String, IErrorHandler> ERROR_HANDLER_MAP;
 
     @Override
     public void setErrorHandlerMap(Map<String, IErrorHandler> errorHandlerMap) {
@@ -95,7 +110,7 @@ public class DispatcherServlet extends HttpServlet implements IDispatcherRegistr
     }
 
     protected boolean tryHandleError(String code, Object errorContext, HttpServletRequest rawRequest, HttpServletResponse rawResponse, HttpMethod httpMethod) {
-        IErrorHandler handler = ERROR_HANDLER_MAP.get(ErrorCode.NOT_FOUND);
+        IErrorHandler handler = ERROR_HANDLER_MAP.get(code);
         if(handler != null) {
             handler.handle(errorContext, rawRequest, rawResponse, httpMethod);
             return true;
@@ -103,23 +118,36 @@ public class DispatcherServlet extends HttpServlet implements IDispatcherRegistr
         return false;
     }
 
-    private static final String MSG_UNHANDLED_ERROR = "burst web: DispatcherServlet, unhandled error";
+    protected <REQUEST extends IRequest> Class<REQUEST> getRequestClass(Class<? extends IAction<REQUEST>> actionClass) {
+        ParameterizedType actionInterface = null;
+        for(Type type : actionClass.getGenericInterfaces()) {
+            if(IAction.class.equals(((ParameterizedType)type).getRawType())) {
+                actionInterface = (ParameterizedType)type;
+            }
+        }
+        return (Class) actionInterface.getActualTypeArguments()[0];
+    }
 
     protected void handleRequest(HttpServletRequest rawRequest, HttpServletResponse rawResponse, HttpMethod httpMethod) throws ServletException{
-        IAction action = DISPATCHER.dispatch(rawRequest, rawResponse, httpMethod);
+        IAction action = DISPATCHER.dispatch(webApplicationContext, rawRequest, rawResponse, httpMethod);
         if(action == null) {
             tryHandleError(ErrorCode.NOT_FOUND, null, rawRequest, rawResponse, httpMethod);
             return;
         }
 
         try {
-            IRequest request = REQUEST_BUILDER.build(rawRequest, rawResponse, httpMethod);
+            IRequest request = REQUEST_BUILDER.build(getRequestClass(action.getClass()), rawRequest, rawResponse, httpMethod);
             IContext context = CONTEXT_BUILDER.build(rawRequest, rawResponse, httpMethod);
             IResponse response = action.execute(request, context);
+            if(response.getErrorCode() != null) {
+                if(tryHandleError(response.getErrorCode(), null, rawRequest, rawResponse, httpMethod)) {
+                    return;
+                }
+            }
             response.response(rawRequest, rawResponse, httpMethod);
         } catch (Throwable ex) {
             if(tryHandleError(ErrorCode.SERVER_ERROR, ex, rawRequest, rawResponse, httpMethod)) {
-                throw new ServletException(MSG_UNHANDLED_ERROR, ex);
+                throw new ServletException("burst web: DispatcherServlet, unhandled error", ex);
             }
         }
     }

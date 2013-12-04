@@ -2,6 +2,7 @@ package burst.web.dispatcher;
 
 import burst.web.IAction;
 import burst.web.enums.HttpMethod;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,5 +13,5 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IDispatcher {
 
-    IAction dispatch(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod);
+    IAction dispatch(WebApplicationContext context, HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod);
 }

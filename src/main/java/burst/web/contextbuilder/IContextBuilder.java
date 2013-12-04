@@ -2,6 +2,7 @@ package burst.web.contextbuilder;
 
 import burst.web.IContext;
 import burst.web.enums.HttpMethod;
+import org.springframework.beans.factory.FactoryBean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

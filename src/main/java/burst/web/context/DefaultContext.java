@@ -2,6 +2,7 @@ package burst.web.context;
 
 import burst.web.IContext;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,6 +11,14 @@ import java.util.Set;
  *         13-12-4 上午12:57
  */
 public class DefaultContext implements IContext {
+
+    public DefaultContext() {
+        this.rawParameters = new HashMap<String, String>();
+    }
+
+    public DefaultContext(Map<String, String> innerContext) {
+        this.rawParameters = innerContext;
+    }
 
     private Map<String, String> rawParameters;
 

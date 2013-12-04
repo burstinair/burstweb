@@ -4,7 +4,7 @@ package burst.web;
  * @author Burst
  *         13-12-4 上午12:00
  */
-public interface IAction {
+public interface IAction<REQUEST extends IRequest> {
 
-    IResponse execute(IRequest request, IContext context) throws Throwable;
+    IResponse execute(REQUEST request, IContext context) throws Throwable;
 }

@@ -11,5 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IResponse {
 
-    void response(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod);
+    void response(HttpServletRequest request, HttpServletResponse response, HttpMethod httpMethod) throws Throwable;
+
+    String getErrorCode();
 }

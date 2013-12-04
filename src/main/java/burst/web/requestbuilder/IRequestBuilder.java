@@ -2,6 +2,7 @@ package burst.web.requestbuilder;
 
 import burst.web.IRequest;
 import burst.web.enums.HttpMethod;
+import org.springframework.beans.factory.FactoryBean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,5 +13,5 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IRequestBuilder {
 
-    IRequest build(HttpServletRequest rawRequest, HttpServletResponse rawResponse, HttpMethod method);
+    <REQUEST extends IRequest> REQUEST build(Class<REQUEST> requestClass, HttpServletRequest rawRequest, HttpServletResponse rawResponse, HttpMethod method) throws Throwable;
 }
